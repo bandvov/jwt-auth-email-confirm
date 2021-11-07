@@ -7,15 +7,17 @@ const UserDto = require("../dto/user-dto.js");
 
 class UserService {
   async registerUser(email, password) {
-    const candidate = await User.find({ email });
+    const candidate = await User.findOne({ email });
+    console.log(candidate);
     if (candidate) throw Error("User already exists!");
     const hashedPassword = await bcrypt.hashSync(password, 11);
-    const activationLink = uuid.v4;
+    const activationLink = uuid.v4();
     const user = await User.create({
       activationLink,
       email,
       password: hashedPassword,
     });
+    user.save();
     await mailService.sendActivationMail(email, activationLink);
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
