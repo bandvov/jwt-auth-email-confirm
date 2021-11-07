@@ -8,7 +8,7 @@ const UserDto = require("../dto/user-dto.js");
 class UserService {
   async registerUser(email, password) {
     const candidate = await User.findOne({ email });
-    console.log(candidate);
+
     if (candidate) throw Error("User already exists!");
     const hashedPassword = await bcrypt.hashSync(password, 11);
     const activationLink = uuid.v4();
@@ -17,7 +17,6 @@ class UserService {
       email,
       password: hashedPassword,
     });
-    user.save();
     await mailService.sendActivationMail(email, activationLink);
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
