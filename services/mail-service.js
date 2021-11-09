@@ -11,6 +11,9 @@ class MailService {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
       },
+      tls: {
+        rejectUnauthorized: false,
+      },
     });
   }
   async sendActivationMail(to, link) {
@@ -26,10 +29,6 @@ class MailService {
         <a href=${link}>${link}</a>
       </div>
       `,
-        tls: {
-          // do not fail on invalid certs
-          rejectUnauthorized: false,
-        },
       })
       .catch((err) => {
         console.log(err);
