@@ -6,7 +6,7 @@ const { body } = require("express-validator");
 router.post(
   "/registration",
   body("email").isEmail(),
-  body("password",'Week password').isStrongPassword({
+  body("password", "Week password").isStrongPassword({
     minLength: 8,
     minNumbers: 1,
     minUppercase: 1,
@@ -14,9 +14,19 @@ router.post(
   }),
   userController.registration
 );
-router.post("/login", userController.login);
+router.post(
+  "/login",
+  body("email").isEmail(),
+  body("password", "Week password").isStrongPassword({
+    minLength: 8,
+    minNumbers: 1,
+    minUppercase: 1,
+    minSymbols: 1,
+  }),
+  userController.login
+);
 router.post("/logout", userController.logout);
-router.post("/activate:link", userController.activate);
+router.get("/activate/:link", userController.activate);
 router.post("/refresh", userController.refresh);
 router.get("/users", userController.getUsers);
 
