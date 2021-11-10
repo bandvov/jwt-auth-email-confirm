@@ -1,18 +1,17 @@
+const UserModel = require("../models/userModel.js");
 const nodemailer = require("nodemailer");
-const dotenv = require("dotenv").config();
+const dotnev = require("dotenv");
+dotnev.config();
 class MailService {
   constructor() {
     this.transporter = nodemailer.createTransport({
       host: "smtp.gmail.com",
-      port: 587,
-      text: "",
-      secure: false,
+      Port: 587,
+      secure: true,
+      tls: { rejectUnauthorized: false },
       auth: {
         user: process.env.SMTP_USER,
         pass: process.env.SMTP_PASSWORD,
-      },
-      tls: {
-        rejectUnauthorized: false,
       },
     });
   }
@@ -22,17 +21,34 @@ class MailService {
         from: process.env.SMTP_USER,
         to: to,
         text: "",
-        subject: `Account activation on http://localhost:3000`,
+        subject: `Account activation on localsite`,
         html: `
       <div>
         <h1>Account activation</h1>
-        <a href=${link}>${link}</a>
+        <a href=${link}>
+        <button
+         style="padding:.5rem 1rem; 
+          background-color: 
+          transparent; border: 
+          1px solid green; 
+          border-radius: 5px">
+          Click to Activate
+        </button>
+        </a>
       </div>
       `,
       })
       .catch((err) => {
         console.log(err);
       });
+  }
+  async activate(activationLink) {
+    const user = UserModel.findOne({ activationLink });
+    if (!user) {
+      throw Error("Activation link is not correct");
+    }
+    user.isActivated = true;
+    await user.save();
   }
 }
 
