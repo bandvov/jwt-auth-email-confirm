@@ -1,4 +1,3 @@
-const UserModel = require("../models/userModel.js");
 const nodemailer = require("nodemailer");
 const dotnev = require("dotenv");
 dotnev.config();
@@ -41,14 +40,6 @@ class MailService {
       .catch((err) => {
         console.log(err);
       });
-  }
-  async activate(activationLink) {
-    const user = UserModel.findOne({ activationLink });
-    if (!user) {
-      throw Error("Activation link is not correct");
-    }
-    user.isActivated = true;
-    await user.save();
   }
 }
 

@@ -5,15 +5,17 @@ const cookieParser = require("cookie-parser");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const { userRouter } = require("./routes/index.js");
-
+const errorMiddleware = require("./middleware/error-middleware");
 dotenv.config();
 
 const PORT = 5000;
 
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(cookieParser());
-app.use(cors({ origin: "*" }));
 app.use("/api", userRouter);
+app.use(errorMiddleware);
+
 app.get("/", (req, res) => {
   res.send({ message: "Server is up and running" });
 });
