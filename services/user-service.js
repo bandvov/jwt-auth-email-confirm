@@ -5,6 +5,7 @@ const mailService = require("./mail-service.js");
 const tokenService = require("./token-service.js");
 const UserDto = require("../dto/user-dto.js");
 const ApiError = require("../exceptions/api-error.js");
+const userModel = require("../models/userModel.js");
 class UserService {
   async registerUser(email, password) {
     const candidate = await User.findOne({ email });
@@ -29,6 +30,21 @@ class UserService {
       user: userDto,
     };
   }
+  async login({ email, password }) {
+    const user = await userModel.findOne({ email });
+    if (!user) throw ApiError.badRequest("User not found");
+ 
+    const isPassEqual = await bcrypt.compare(password, user.password);
+    if (!isPassEqual) throw ApiError.badRequest("Password not correct");
+    const userDto = new UserDto(user);
+    const tokens = tokenService.generateTokens({ ...userDto });
+    tokenService.saveToken(user.id, tokens.refreshToken);
+    return {
+      ...tokens,
+      user: userDto,
+    };
+  }
+
   async activate(activationLink) {
     const user = UserModel.findOne({ activationLink });
     if (!user) {
