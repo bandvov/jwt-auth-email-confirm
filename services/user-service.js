@@ -19,7 +19,7 @@ class UserService {
     });
     await mailService.sendActivationMail(
       email,
-      `http://localhost:5000/api/activate/${activationLink}`
+      `http://localhost:3000/activate/${activationLink}`
     );
     const userDto = new UserDto(user);
     const tokens = tokenService.generateTokens({ ...userDto });
