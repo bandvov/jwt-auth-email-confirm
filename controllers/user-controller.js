@@ -6,13 +6,14 @@ class UserController {
   async registration(req, res, next) {
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-      next(
+      return next(
         ApiError.badRequest("Email or password not correct", errors.array())
       );
     }
     const { email, password } = req.body;
     try {
       const userData = await userService.registerUser(email, password);
+      res.setHeader("Content-Type", "application/json");
       res.cookie("refreshToken", userData.refreshToken, {
         maxAge: 1000 * 60 * 60 * 24 * 30,
         httpOnly: true,
@@ -69,7 +70,6 @@ class UserController {
   }
   async getUsers(req, res, next) {
     const users = await userService.getAllUsers();
-    console.log(users);
     return res.json(users);
   }
 }

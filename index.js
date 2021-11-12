@@ -10,9 +10,20 @@ dotenv.config();
 
 const PORT = 5000;
 
-app.use(cors({ origin: "*" }));
+const origin =
+  process.env.NODE_ENV === "production" ? "" : "http://localhost:3000";
+app.disable("x-powered-by");
+app.use(
+  cors({
+    origin,
+    credentials: true,
+    methods: ["POST", "GET"],
+  })
+);
 app.use(express.json());
-app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser("secret"));
+
 app.use("/api", userRouter);
 app.use(errorMiddleware);
 
